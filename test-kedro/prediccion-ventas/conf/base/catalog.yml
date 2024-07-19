@@ -1,0 +1,22 @@
+# Here you can define all your data sets by using simple YAML syntax.
+#
+# Documentation for this file format can be found in "The Data Catalog"
+# Link: https://docs.kedro.org/en/stable/data/data_catalog.html
+#
+order_items:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/olist_order_items_dataset.csv
+
+products:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/olist_products_dataset.csv
+
+payments:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/olist_order_payments_dataset.csv
+
+# preprocessed_data:
+#  type: pandas.CSVDataset
+#  filepath: data/02_intermediate/data_preprocessed.csv
+
+
