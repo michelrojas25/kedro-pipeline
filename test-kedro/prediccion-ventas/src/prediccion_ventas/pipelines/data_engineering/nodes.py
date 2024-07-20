@@ -3,12 +3,12 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import RobustScaler
-from typing import Dict
+from typing import Dict, Tuple
 
 def load_datasets(order_items: pd.DataFrame, products: pd.DataFrame, payments: pd.DataFrame) -> Dict[str, pd.DataFrame]:
     return {'order_items': order_items, 'products': products, 'payments': payments}
 
-def preprocess_data(datasets: Dict[str, pd.DataFrame], threshold: int) -> pd.DataFrame:
+def preprocess_data(datasets: Dict[str, pd.DataFrame], threshold: int) -> Tuple[pd.DataFrame, list]:
     order_items = datasets['order_items']
     products = datasets['products']
     payments = datasets['payments']
@@ -50,38 +50,32 @@ def preprocess_data(datasets: Dict[str, pd.DataFrame], threshold: int) -> pd.Dat
 
     scaler = RobustScaler()
     data[features] = scaler.fit_transform(data[features])
-    
-    # Guardar gráficos
-    save_plots(data, features, 'output')
-    return data
 
-#def save_preprocessed_data(data: pd.DataFrame, output_path: str) -> None:
-#    data.to_csv(output_path, index=False)
+    return data, features
 
-def save_plots(data: pd.DataFrame, features: list, output_dir: str) -> None:
-    import os
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+def generar_graficos(data: pd.DataFrame, features: list) -> Dict[str, plt.Figure]:
+    graficos = {}
 
     # Distribución de la variable objetivo
-    sns.histplot(data['payment_value'], kde=True)
-    plt.title('Distribución de payment_value')
-    plt.savefig(os.path.join(output_dir, 'dist_payment_value.png'))
-    plt.close()
+    fig1, ax1 = plt.subplots()
+    sns.histplot(data['payment_value'], kde=True, ax=ax1)
+    ax1.set_title('Distribución de payment_value')
+    graficos["dist_payment_value"] = fig1
 
     # Matriz de correlación
+    fig2, ax2 = plt.subplots()
     corr_matrix = data[features + ['payment_value']].corr()
-    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
-    plt.title('Matriz de correlación')
-    plt.savefig(os.path.join(output_dir, 'correlation_matrix.png'))
-    plt.close()
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', ax=ax2)
+    ax2.set_title('Matriz de correlación')
+    graficos["correlation_matrix"] = fig2
 
     # Detectar valores atípicos usando boxplots
-    plt.figure(figsize=(15, 10))
+    fig3, axes = plt.subplots(3, 4, figsize=(15, 10))
     for i, col in enumerate(features):
-        plt.subplot(3, 4, i + 1)
-        sns.boxplot(x=data[col])
-        plt.title(col)
-    plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'boxplots.png'))
-    plt.close()
+        sns.boxplot(x=data[col], ax=axes[i // 4, i % 4])
+        axes[i // 4, i % 4].set_title(col)
+    fig3.tight_layout()
+    graficos["boxplots"] = fig3
+
+    return graficos
+

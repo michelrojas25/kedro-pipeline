@@ -3,6 +3,7 @@
 # Documentation for this file format can be found in "The Data Catalog"
 # Link: https://docs.kedro.org/en/stable/data/data_catalog.html
 #
+
 order_items:
   type: pandas.CSVDataset
   filepath: data/01_raw/olist_order_items_dataset.csv
@@ -14,6 +15,24 @@ products:
 payments:
   type: pandas.CSVDataset
   filepath: data/01_raw/olist_order_payments_dataset.csv
+
+# preprocessed_data:
+#  type: MemoryDataSet
+
+dist_payment_value:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/09_tracking/dist_payment_value.png
+  versioned: true
+
+correlation_matrix:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/09_tracking/correlation_matrix.png
+  versioned: true
+
+boxplots:
+  type: matplotlib.MatplotlibWriter
+  filepath: data/09_tracking/boxplots.png
+  versioned: true
 
 # preprocessed_data:
 #  type: pandas.CSVDataset
