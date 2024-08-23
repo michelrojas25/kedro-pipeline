@@ -16,9 +16,6 @@ payments:
   type: pandas.CSVDataset
   filepath: data/01_raw/olist_order_payments_dataset.csv
 
-# preprocessed_data:
-#  type: MemoryDataSet
-
 dist_payment_value:
   type: matplotlib.MatplotlibWriter
   filepath: data/09_tracking/dist_payment_value.png

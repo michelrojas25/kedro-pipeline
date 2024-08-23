@@ -4,9 +4,36 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import RobustScaler
 from typing import Dict, Tuple
+import logging
 
 def load_datasets(order_items: pd.DataFrame, products: pd.DataFrame, payments: pd.DataFrame) -> Dict[str, pd.DataFrame]:
     return {'order_items': order_items, 'products': products, 'payments': payments}
+
+def validate_data(datasets: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
+    order_items = datasets['order_items']
+    products = datasets['products']
+    payments = datasets['payments']
+    
+    # Ejemplo de validaciones con advertencias en lugar de excepciones
+    if order_items.isnull().values.any():
+        logging.warning("order_items contiene valores nulos")
+    if products.isnull().values.any():
+        logging.warning("products contiene valores nulos")
+    if payments.isnull().values.any():
+        logging.warning("payments contiene valores nulos")
+    
+    return datasets
+
+def enrich_data(datasets: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
+    order_items = datasets['order_items']
+    products = datasets['products']
+    payments = datasets['payments']
+
+    # Ejemplo de enriquecimiento de datos
+    products['product_density'] = products['product_weight_g'] / (products['product_length_cm'] * products['product_height_cm'] * products['product_width_cm'])
+
+    datasets['products'] = products
+    return datasets
 
 def preprocess_data(datasets: Dict[str, pd.DataFrame], threshold: int) -> Tuple[pd.DataFrame, list]:
     order_items = datasets['order_items']
@@ -31,7 +58,7 @@ def preprocess_data(datasets: Dict[str, pd.DataFrame], threshold: int) -> Tuple[
     data['payment_value'] = data['payment_value'].astype(float)
 
     features = ['price', 'freight_value', 'product_weight_g', 'product_name_lenght', 'product_description_lenght',
-                'product_photos_qty', 'product_length_cm', 'product_height_cm', 'product_width_cm', 'price_per_weight', 'product_volume']
+                'product_photos_qty', 'product_length_cm', 'product_height_cm', 'product_width_cm', 'price_per_weight', 'product_volume', 'product_density']
     
     def adjust_outliers(df, column, threshold):
         Q1 = df[column].quantile(0.25)

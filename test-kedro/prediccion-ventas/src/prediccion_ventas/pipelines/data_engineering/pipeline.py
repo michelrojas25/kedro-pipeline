@@ -1,5 +1,5 @@
 from kedro.pipeline import Pipeline, node
-from .nodes import load_datasets, preprocess_data, generar_graficos
+from .nodes import load_datasets, validate_data, enrich_data, preprocess_data, generar_graficos
 
 def create_pipeline(**kwargs) -> Pipeline:
     return Pipeline(
@@ -11,8 +11,20 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="load_datasets_node"
             ),
             node(
+                func=validate_data,
+                inputs="datasets",
+                outputs="validated_datasets",
+                name="validate_data_node"
+            ),
+            node(
+                func=enrich_data,
+                inputs="validated_datasets",
+                outputs="enriched_datasets",
+                name="enrich_data_node"
+            ),
+            node(
                 func=preprocess_data,
-                inputs=dict(datasets="datasets", threshold="params:threshold"),
+                inputs=dict(datasets="enriched_datasets", threshold="params:threshold"),
                 outputs=["preprocessed_data", "features"],
                 name="preprocess_data_node"
             ),
